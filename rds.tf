@@ -5,7 +5,7 @@ module "rds" {
 
   source  = "terraform-aws-modules/rds/aws"
 
-  identifier = "${var.environment}-rds-pg-01"
+  identifier = "rds-pg-01"
 
   engine                     = "postgres"
   engine_version             = "13.5"
@@ -18,7 +18,7 @@ module "rds" {
   storage_encrypted = false
   #max_allocated_storage = 100
 
-  db_name                = "${var.environment}rds"
+  db_name                = "rds"
   username               = "admin"
   password               = var.rds_master_password
   create_random_password = false
@@ -26,16 +26,16 @@ module "rds" {
 
   multi_az                        = true   # multi-AZ 허용
   create_db_subnet_group          = true
-  db_subnet_group_name            = "${var.environment}-sng-private"
+  db_subnet_group_name            = "sng-private"
   db_subnet_group_use_name_prefix = false
-  db_subnet_group_description     = "${var.environment}-sng-private"
-  db_subnet_group_tags            = { Name = "${var.environment}-sng-private" }
+  db_subnet_group_description     = "sng-private"
+  db_subnet_group_tags            = { Name = "sng-private" }
   subnet_ids                      = module.vpc.private_subnets
 
   create_db_parameter_group       = true
-  parameter_group_name            = "${var.environment}-rds-pg-01"
+  parameter_group_name            = "rds-pg-01"
   parameter_group_use_name_prefix = false
-  parameter_group_description     = "${var.environment}-rds-pg-01"
+  parameter_group_description     = "rds-pg-01"
   parameters = [
     {
       name  = "log_min_duration_statement"
@@ -79,10 +79,10 @@ module "rds" {
   create_monitoring_role                = false
   monitoring_role_arn                   = "arn:aws:iam::<account-id>:role/rds-monitoring-role"
 
-  tags = merge(var.default_tags, {
-    Name    = "${var.environment_upper}-RDS-PG-01"
+  tags = {
+    Name    = "rds-pg-01"
     Managed = "Terraform"
-  }, var.rds_tags)
+  }
 }
 
 output "rds_endpoint" {
@@ -97,13 +97,13 @@ module "rds-pg-sg" {
   
   source  = "./module/security-group"
   
-  name        = "${var.environment_upper}-RDS-PG-DB"
-  description = "${var.environment_upper}-RDS-PG-DB"
+  name        = "rds-pg-db-sg"
+  description = "rds-pg-db-sg"
   vpc_id      = module.vpc.vpc_id
 
   tags = {
     Managed = "Terraform"
-    Name    = "${var.environment_upper}-RDS-PG-DB"
+    Name    = "rds-pg-db-sg"
   }
 
   security_group_rules = {
